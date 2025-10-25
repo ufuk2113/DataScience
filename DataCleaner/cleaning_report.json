@@ -1,0 +1,123 @@
+{
+  "timestamp": "2025-10-16T13:47:01.059522",
+  "original_file": "K4.0026_1.4.4.Ü.01_dirtydata.csv",
+  "cleaning_steps": {
+    "date_cleaning": {
+      "removed_rows": 1,
+      "remaining_rows": 31,
+      "description": "Entfernung von Zeilen mit fehlenden Datumsangaben und Formatvereinheitlichung"
+    },
+    "duplicate_removal": {
+      "removed_duplicates": 0,
+      "remaining_rows": 31,
+      "description": "Entfernung doppelter Zeilen"
+    },
+    "missing_values": {
+      "numerical_columns": [
+        "Dauer",
+        "Kunden",
+        "MinKauf",
+        "MaxKauf"
+      ],
+      "missing_before": {
+        "Dauer": 2,
+        "Kunden": 1,
+        "MinKauf": 1,
+        "MaxKauf": 2
+      },
+      "missing_after": {
+        "Dauer": 0,
+        "Kunden": 0,
+        "MinKauf": 0,
+        "MaxKauf": 0
+      },
+      "mean_values_used": {
+        "Dauer": 70.34482758620689,
+        "Kunden": 163.7,
+        "MinKauf": 168.96666666666667,
+        "MaxKauf": 554.3586206896551
+      },
+      "description": "Ersetzung fehlender Werte durch Spaltenmittelwerte"
+    },
+    "outlier_removal": {
+      "removed_rows": 4,
+      "remaining_rows": 27,
+      "std_threshold": 3,
+      "columns_analyzed": [
+        "Kunden",
+        "MinKauf",
+        "MaxKauf"
+      ],
+      "outlier_details": {
+        "Kunden": {
+          "lower_bound": -511.5222522991965,
+          "upper_bound": 838.9222522991965,
+          "outlier_count": 2,
+          "outlier_indices": [
+            2,
+            16
+          ],
+          "outlier_values": [
+            1030.0,
+            980.0
+          ],
+          "statistics": {
+            "mean": 105.67931034482758,
+            "std": 13.762406852165501
+          }
+        },
+        "MinKauf": {
+          "lower_bound": -515.18299722479,
+          "upper_bound": 858.8358707880085,
+          "outlier_count": 1,
+          "outlier_indices": [
+            6
+          ],
+          "outlier_values": [
+            1360.0
+          ],
+          "statistics": {
+            "mean": 129.39166666666668,
+            "std": 15.168240659066498
+          }
+        },
+        "MaxKauf": {
+          "lower_bound": -2405.5163892581777,
+          "upper_bound": 3566.653335070985,
+          "outlier_count": 1,
+          "outlier_indices": [
+            1
+          ],
+          "outlier_values": [
+            4790.0
+          ],
+          "statistics": {
+            "mean": 424.66360153256704,
+            "std": 567.535961248522
+          }
+        }
+      },
+      "description": "Entfernung von Ausreißern basierend auf 3 Standardabweichungen"
+    }
+  },
+  "original_shape": {
+    "rows": 32,
+    "columns": 5
+  },
+  "original_columns": [
+    "Dauer",
+    "Datum",
+    "Kunden",
+    "MinKauf",
+    "MaxKauf"
+  ],
+  "final_shape": {
+    "rows": 27,
+    "columns": 5
+  },
+  "cleaning_summary": {
+    "total_rows_removed": 5,
+    "percentage_remaining": 84.375,
+    "cleaning_completed": true
+  }
+}
