@@ -268,8 +268,35 @@ class PolynomialModelSelector:
         
         return df
 
+    # Beispiel mit echten Daten (optional)
+# Beispiel mit echten Daten (optional)
+def demo_with_real_data():
+    """Demonstriert die Verwendung mit einem realistischeren Datensatz."""
+    from sklearn.datasets import make_regression
+    
+    # Synthetische Daten generieren
+    X, y = make_regression(n_samples=200, n_features=1, noise=10, random_state=42)
+    
+    # Kreuzvalidierung
+    cv = PolynomialModelSelector(k_folds=10, degrees=[1, 2, 3, 4, 5])
+    results = cv.cross_validate(X, y)
+    
+    # Ergebnisse
+    print(cv.get_results_dataframe())
+    cv.plot_results()
+    
+    return cv
+
+# Demo ausführen
+# demo_with_real_data()
+
+
 # Beispiel für die Verwendung
 if __name__ == "__main__":
+    # Demo ausführen
+    # demo_with_real_data()
+   
+
     # Beispiel-Daten generieren
     np.random.seed(42)
     n_samples = 100
