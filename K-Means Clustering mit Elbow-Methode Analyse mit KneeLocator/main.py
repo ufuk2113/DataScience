@@ -65,24 +65,51 @@ class KMeansAnalyzer:
         return self.inertia_values
     
     def plot_elbow_curve(self, save_path: Optional[str] = None) -> plt.Figure:
+        """
+        Erstellt einen Elbow-Plot der Inertia-Werte gegen die Anzahl der Cluster
+        und markiert automatisch den gefundenen Elbow-Punkt (roter Strich).
+        """
         if not self.inertia_values:
             raise ValueError("Keine Inertia-Werte verfügbar. Bitte zuerst run_kmeans_analysis() ausführen.")
 
+        # ✅ KneeLocator zur Bestimmung des Knickpunkts
+        knee_locator = KneeLocator(
+            x=list(self.cluster_range),
+            y=self.inertia_values,
+            curve='convex',
+            direction='decreasing'
+        )
+        optimal_k = knee_locator.knee
+
+        # 🔹 Plot vorbereiten
         fig, ax = plt.subplots(figsize=(10, 6))
-        ax.plot(self.cluster_range, self.inertia_values, 'bo-', linewidth=2, markersize=8)
+        ax.plot(self.cluster_range, self.inertia_values, 'bo-', linewidth=2, markersize=8, label="Inertia")
+
+        # 🔴 Vertikale Linie beim „Elbow“-Punkt einzeichnen
+        if optimal_k is not None:
+            ax.axvline(x=optimal_k, color='red', linestyle='--', linewidth=2, label=f'Elbow bei k={optimal_k}')
+            ax.scatter(optimal_k, self.inertia_values[optimal_k - 1], color='red', s=100, zorder=5)  # Punkt markieren
+
+        # 🔹 Achsenbeschriftung & Titel
         ax.set_xlabel('Anzahl der Cluster', fontsize=12)
         ax.set_ylabel('Inertia (Within-Cluster Sum of Squares)', fontsize=12)
         ax.set_title('Elbow-Methode für optimale Cluster-Anzahl', fontsize=14, fontweight='bold')
         ax.grid(True, alpha=0.3)
         ax.set_xticks(list(self.cluster_range))
+        ax.legend()
+
         plt.tight_layout()
 
+        # ✅ Plot speichern (optional)
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
             logger.info(f"Plot gespeichert unter: {save_path}")
 
         plt.show()
+        logger.info(f"Elbow-Plot erstellt (Elbow bei k={optimal_k})")
+
         return fig
+
     
     # ==============================================================
     # 🔴 ALTER CODE (manuelle Elbow-Methode) – deaktiviert, aber belassen
