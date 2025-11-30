@@ -66,7 +66,7 @@ class UserGenerator:
     def __init__(self):
         self.used_ids = set()
         self.fake = Faker("de_DE")
-        
+    # Funktion Deklarationen
     def generate_user_id(self):    
       pass
     def generate_phone(self):
