@@ -67,3 +67,27 @@ class UserGenerator:
         self.used_ids = set()
         self.fake = Faker("de_DE")
         
+    def generate_user_id(self):    
+      pass
+    def generate_phone(self):
+      pass
+    def generate_income(self):  
+      pass
+    def generate_birthdate_and_age(self):
+      pass
+    def generate_german_geolocation(self):
+      pass
+    def create_user(self):
+        pass
+    def create_dataset(self, n):
+      pass
+    # --------------------- EXPORT FUNKTIONEN ---------------------
+    def export_csv(self, df, filename="users.csv"):
+        df.to_csv(filename, index=False)
+    def export_json(self, df, filename="users.json"):
+        df.to_json(filename, orient="records", indent=4)
+    def export_xlsx(self, df, filename="users.xlsx"):
+        df.to_excel(filename, index=False)    
+    def export_sql(self, df, filename="users.sql"):
+      pass
+    
