@@ -167,7 +167,7 @@ flowchart TD
 python --version
 
 # Abhängigkeiten installieren
-pip install torch torchvision numpy matplotlib
+pip install -r requirements.txt
 ```
 
 ### Ausführung
