@@ -198,9 +198,9 @@ Für 4 echte Cluster in den Daten:
 ```
 k=1: Inertia = 1500.45
 k=2: Inertia = 800.23
-k=3: Inertia = 400.12
-k=4: Inertia = 150.05    ← Optimal (starker Abfall)
-k=5: Inertia = 148.98    ← Nur geringe Verbesserung
+k=3: Inertia = 400.12    ← Optimal (starker Abfall)
+k=4: Inertia = 150.05    ← Nur geringe Verbesserung
+k=5: Inertia = 148.98    
 k=6: Inertia = 147.50
 ```
 
