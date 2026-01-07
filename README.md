@@ -1,5 +1,5 @@
 
-```markdown
+
 # Data Science Beispielprojekte
 
 Diese Sammlung enthält verschiedene Data Science Projekte und Algorithmen, die für Lern- und Demonstrationszwecke erstellt wurden.
