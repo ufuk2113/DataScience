@@ -99,6 +99,7 @@ flowchart TD
 hierarchical_clustering/
 ├── hierarchical_clustering.py  # Hauptklasse
 ├── main.py                     # Demo-Skript
+├── requirements.txt            # Abhängigkeiten
 └── README.md                   # Diese Dokumentation
 ```
 
