@@ -1,156 +1,201 @@
 # Hierarchical Clustering Projekt
 
-Eine Python-Implementierung für hierarchisches Clustering mit Dendrogramm-Visualisierung und verschiedenen Linkage-Methoden.
+## 📋 Projektübersicht
 
-## Projektstruktur
+Dieses Projekt implementiert eine Python-Klasse für hierarchisches Clustering mit Dendrogramm-Visualisierung. Es bietet eine benutzerfreundliche Schnittstelle zur Durchführung von Cluster-Analysen auf zweidimensionalen Daten und ermöglicht die Visualisierung der Ergebnisse in Form von Dendrogrammen.
 
-```
-hierarchical_clustering/
-├── hierarchical_clustering.py  # Hauptklasse für hierarchisches Clustering
-├── main.py                     # Demonstrationsskript
-└── README.md                   # Diese Datei
-```
+## 🏗️ UML-Diagramm
 
-## UML-Klassendiagramm
-
-### Detailierte UML für `HierarchicalClustering` Klasse
+### Klassendiagramm
 
 ```mermaid
 classDiagram
     class HierarchicalClustering {
-        -data: np.ndarray
-        -linkage_matrix: np.ndarray
-        -labels: List[str]
-        -method: str
-        -metric: str
+        - data: np.ndarray
+        - linkage_matrix: np.ndarray
+        - labels: List[str]
+        - method: str
+        - metric: str
         
-        +__init__(x: List[float], y: List[float], labels: Optional[List[str]], method: str, metric: str)
-        +fit() None
-        +plot_dendrogram(title: Optional[str], figsize: tuple, color_threshold: float, show_grid: bool) plt.Figure
-        +get_clusters(n_clusters: int) Dict[int, List[int]]
-        +set_method(method: str) None
-        +set_metric(metric: str) None
-        +get_linkage_matrix() np.ndarray
-        +__str__() str
+        + __init__(x: List[float], y: List[float], labels: Optional[List[str]], method: str, metric: str)
+        + fit() None
+        + plot_dendrogram(title: Optional[str], figsize: tuple, color_threshold: float, show_grid: bool) plt.Figure
+        + get_clusters(n_clusters: int) Dict[int, List[int]]
+        + set_method(method: str) None
+        + set_metric(metric: str) None
+        + get_linkage_matrix() np.ndarray
+        + __str__() str
     }
+    
+    class main {
+        + main() None
+    }
+    
+    main --> HierarchicalClustering : verwendet
+    HierarchicalClustering --> numpy : verwendet
+    HierarchicalClustering --> scipy.cluster.hierarchy : verwendet
+    HierarchicalClustering --> matplotlib.pyplot : verwendet
 ```
 
-### Methoden-Details
+### Sequenzdiagramm: Grundlegende Nutzung
 
-#### Konstruktor: `__init__(x, y, labels, method, metric)`
-- **Parameter**:
-  - `x: List[float]` - x-Koordinaten der Datenpunkte
-  - `y: List[float]` - y-Koordinaten der Datenpunkte
-  - `labels: Optional[List[str]]` - Beschriftungen für die Datenpunkte (optional)
-  - `method: str` - Linkage-Methode ('ward', 'complete', 'average', 'single')
-  - `metric: str` - Distanzmetrik ('euclidean', 'cityblock', 'cosine', etc.)
+```mermaid
+sequenceDiagram
+    participant M as main.py
+    participant HC as HierarchicalClustering
+    participant SC as scipy.cluster.hierarchy
+    participant PLT as matplotlib
+    
+    M->>HC: __init__(x, y, labels, method='ward')
+    HC->>HC: Daten initialisieren
+    HC->>HC: Labels generieren
+    
+    M->>HC: fit()
+    HC->>SC: linkage(data, method, metric)
+    SC-->>HC: linkage_matrix
+    
+    M->>HC: plot_dendrogram()
+    HC->>SC: dendrogram(linkage_matrix)
+    HC->>PLT: plt.subplots()
+    HC->>PLT: Titel, Labels, Grid setzen
+    HC-->>M: Figure-Objekt
+    
+    M->>HC: get_clusters(3)
+    HC->>SC: fcluster(linkage_matrix, 3)
+    HC-->>M: Cluster-Zuordnungen
+```
 
-- **Funktionalität**:
-  - Kombiniert x- und y-Koordinaten zu einem 2D-Array
-  - Generiert automatische Labels falls keine bereitgestellt werden
-  - Validiert die Länge der Labels
+### Aktivitätsdiagramm: Cluster-Analyse Workflow
 
-#### `fit()`
-- **Funktionalität**: Führt die hierarchische Clusterbildung durch
-- **Exception**: `ValueError` bei Fehlern in der Clusterbildung
-- **Seiteneffekt**: Setzt `self.linkage_matrix`
+```mermaid
+flowchart TD
+    Start([Start]) --> Init[Initialisierung mit<br>x,y,labels,method,metric]
+    Init --> DataPrep[Daten als np.ndarray vorbereiten]
+    DataPrep --> Fit[fit-Methode aufrufen]
+    Fit --> Linkage[scipy.cluster.hierarchy.linkage]
+    Linkage --> Matrix[Linkage-Matrix speichern]
+    
+    Matrix --> Choices{Was tun?}
+    Choices -->|Dendrogramm| Plot[plot_dendrogram]
+    Choices -->|Cluster| Cluster[get_clusters]
+    Choices -->|Matrix| GetMat[get_linkage_matrix]
+    
+    Plot --> Dendro[dendrogram zeichnen]
+    Dendro --> Config[Plot konfigurieren]
+    Config --> Show[Dendrogramm anzeigen]
+    
+    Cluster --> Fcluster[fcluster aufrufen]
+    Fcluster --> Group[Cluster gruppieren]
+    Group --> Return[Cluster-Dict zurückgeben]
+    
+    Show --> End([Ende])
+    Return --> End
+    GetMat --> End
+```
 
-#### `plot_dendrogram(title, figsize, color_threshold, show_grid)`
-- **Parameter**:
-  - `title: Optional[str]` - Titel des Dendrogramms
-  - `figsize: tuple` - Größe der Figur (Standard: (10, 6))
-  - `color_threshold: float` - Schwellenwert für Cluster-Farben
-  - `show_grid: bool` - Zeigt Gitterlinien an
-  
-- **Rückgabe**: `plt.Figure` - Matplotlib Figure-Objekt
-- **Funktionalität**: Erstellt und konfiguriert das Dendrogramm
+## 📁 Dateistruktur
 
-#### `get_clusters(n_clusters)`
-- **Parameter**: `n_clusters: int` - Anzahl der gewünschten Cluster
-- **Rückgabe**: `Dict[int, List[int]]` - Cluster-Zuordnungen
-- **Funktionalität**: Gruppiert Datenpunkte in die angegebene Anzahl von Clustern
+```
+hierarchical_clustering/
+├── hierarchical_clustering.py  # Hauptklasse
+├── main.py                     # Demo-Skript
+└── README.md                   # Diese Dokumentation
+```
 
-#### `set_method(method)`
-- **Parameter**: `method: str` - Neue Linkage-Methode
-- **Validierung**: Prüft gegen gültige Methoden
-- **Seiteneffekt**: Setzt `linkage_matrix` zurück für neues Fitting
+## 🚀 Installation und Abhängigkeiten
 
-#### `set_metric(metric)`
-- **Parameter**: `metric: str` - Neue Distanzmetrik
-- **Warnung**: Gibt Warnung bei potenziell problematischen Metriken
-- **Seiteneffekt**: Setzt `linkage_matrix` zurück für neues Fitting
+### Voraussetzungen
+- Python 3.7 oder höher
+- pip (Python Package Manager)
 
-#### `get_linkage_matrix()`
-- **Rückgabe**: `np.ndarray` - Kopie der Linkage-Matrix
-- **Funktionalität**: Gibt die berechnete Linkage-Matrix zurück
+### Installation der Abhängigkeiten
 
-#### `__str__()`
-- **Rückgabe**: `str` - String-Repräsentation der Klasse
+```bash
+pip install numpy matplotlib scipy
+```
 
-## Verwendung
+### Alternative: requirements.txt
+```
+numpy>=1.21.0
+matplotlib>=3.5.0
+scipy>=1.7.0
+```
+
+Installieren mit:
+```bash
+pip install -r requirements.txt
+```
+
+## 📊 Funktionsweise
+
+### 1. Datenstruktur
+- Die Klasse arbeitet mit 2D-Datenpunkten (x, y Koordinaten)
+- Daten werden als `numpy.ndarray` gespeichert
+- Jeder Punkt kann ein Label haben (automatisch generiert oder benutzerdefiniert)
+
+### 2. Linkage-Methoden
+Die Klasse unterstützt verschiedene Linkage-Methoden:
+- **ward**: Minimiert die Varianz innerhalb der Cluster
+- **complete**: Maximale Distanz zwischen Clustern
+- **average**: Durchschnittliche Distanz zwischen Clustern
+- **single**: Minimale Distanz zwischen Clustern
+- **weighted**, **centroid**, **median**: Zusätzliche Optionen
+
+### 3. Distanzmetriken
+Verfügbare Distanzmetriken:
+- **euclidean**: Euklidische Distanz (Standard)
+- **cityblock**: Manhattan-Distanz
+- **cosine**: Kosinus-Distanz
+- **correlation**: Korrelations-Distanz
+
+## 💻 Verwendung
 
 ### Grundlegende Verwendung
 
 ```python
 from hierarchical_clustering import HierarchicalClustering
 
-# Daten definieren
+# Daten vorbereiten
 x = [4, 6, 9, 4, 3, 11, 12, 6, 10, 12]
 y = [22, 18, 25, 16, 16, 24, 24, 22, 21, 21]
 
-# Clustering durchführen
+# Clustering initialisieren
 hc = HierarchicalClustering(x, y, method='ward')
-hc.plot_dendrogram()
-plt.show()
+
+# Clusterbildung durchführen
+hc.fit()
+
+# Dendrogramm anzeigen
+fig = hc.plot_dendrogram(title="Mein Clustering")
 
 # Cluster-Zuordnungen erhalten
 clusters = hc.get_clusters(3)
+print(clusters)
 ```
 
-### Demo ausführen
+### Erweiterte Funktionen
 
-```bash
-python main.py
+```python
+# Benutzerdefinierte Labels
+custom_labels = ['A', 'B', 'C', 'D', 'E']
+hc = HierarchicalClustering(x[:5], y[:5], labels=custom_labels)
+
+# Methode ändern
+hc.set_method('complete')
+hc.set_metric('cityblock')
+
+# Linkage-Matrix abrufen
+linkage_matrix = hc.get_linkage_matrix()
+
+# Verschiedene Cluster-Anzahlen testen
+for n in [2, 3, 4, 5]:
+    clusters = hc.get_clusters(n)
+    print(f"{n} Cluster: {clusters}")
 ```
 
-Die Demo zeigt:
-1. Grundlegendes Clustering mit Ward-Methode
-2. Clustering mit benutzerdefinierten Labels
-3. Vergleich verschiedener Linkage-Methoden
-4. Cluster-Analyse mit verschiedenen Anzahlen
+## 📈 Beispielausgabe
 
-## Abhängigkeiten
-
-- `numpy` >= 1.20.0
-- `matplotlib` >= 3.3.0
-- `scipy` >= 1.6.0
-
-Installieren mit:
-```bash
-pip install numpy matplotlib scipy
-```
-
-## Supported Linkage-Methoden
-
-- `ward` - Ward's Methode (Varianz-minimierend)
-- `complete` - Complete Linkage (Maximums-Distanz)
-- `average` - Average Linkage (Durchschnitts-Distanz)
-- `single` - Single Linkage (Minimums-Distanz)
-- `weighted` - Gewichtete Methode
-- `centroid` - Zentroid-Methode
-- `median` - Median-Methode
-
-## Supported Distanzmetriken
-
-- `euclidean` - Euklidische Distanz
-- `cityblock` - Manhattan-Distanz
-- `cosine` - Kosinus-Distanz
-- `correlation` - Korrelations-Distanz
-
-## Beispielausgabe
-
-Die Demo generiert verschiedene Dendrogramme und Textausgaben:
-
+### Konsolenausgabe (Auszug)
 ```
 === Hierarchical Clustering Demo ===
 
@@ -159,12 +204,119 @@ P1: (4, 22)
 P2: (6, 18)
 ...
 
+1. Grundlegendes Clustering mit Ward-Methode
 Cluster-Zuordnungen (3 Cluster):
-Cluster 1: [0, 1, 3, 4, 7] -> ['P1(4,22)', 'P2(6,18)', 'P4(4,16)', 'P5(3,16)', 'P8(6,22)']
-Cluster 2: [2, 5, 6, 9] -> ['P3(9,25)', 'P6(11,24)', 'P7(12,24)', 'P10(12,21)']
-Cluster 3: [8] -> ['P9(10,21)']
+Cluster 1: [0, 1, 7] -> ['P1(4,22)', 'P2(6,18)', 'P8(6,22)']
+Cluster 2: [2, 5, 6] -> ['P3(9,25)', 'P6(11,24)', 'P7(12,24)']
+Cluster 3: [3, 4, 8, 9] -> ['P4(4,16)', 'P5(3,16)', 'P9(10,21)', 'P10(12,21)']
 ```
 
-## Lizenz
+### Visualisierungen
+Das Programm erstellt mehrere Dendrogramme:
+1. Grundlegendes Dendrogramm mit Ward-Methode
+2. Dendrogramm mit benutzerdefinierten Labels
+3. Vergleich verschiedener Linkage-Methoden
 
-Dieses Projekt steht unter der MIT Lizenz.
+## 🔧 Methoden-Referenz
+
+### `__init__(x, y, labels=None, method='ward', metric='euclidean')`
+Initialisiert das Clustering-Objekt.
+
+**Parameter:**
+- `x`: Liste der x-Koordinaten
+- `y`: Liste der y-Koordinaten
+- `labels`: Optionale Beschriftungen für Datenpunkte
+- `method`: Linkage-Methode (default: 'ward')
+- `metric`: Distanzmetrik (default: 'euclidean')
+
+### `fit()`
+Führt die hierarchische Clusterbildung durch und berechnet die Linkage-Matrix.
+
+### `plot_dendrogram(title=None, figsize=(10,6), color_threshold=0, show_grid=True)`
+Erstellt und zeigt ein Dendrogramm.
+
+**Parameter:**
+- `title`: Titel des Dendrogramms
+- `figsize`: Größe der Figur
+- `color_threshold`: Schwellenwert für Cluster-Farben
+- `show_grid`: Gitterlinien anzeigen
+
+**Rückgabe:** `matplotlib.figure.Figure` Objekt
+
+### `get_clusters(n_clusters)`
+Gibt Cluster-Zuordnungen für eine bestimmte Anzahl von Clustern zurück.
+
+**Parameter:** `n_clusters` - Anzahl der gewünschten Cluster
+
+**Rückgabe:** Dictionary mit Cluster-ID als Key und Listen von Punkt-Indizes als Value
+
+### `set_method(method)`
+Ändert die Linkage-Methode.
+
+### `set_metric(metric)`
+Ändert die Distanzmetrik.
+
+### `get_linkage_matrix()`
+Gibt die berechnete Linkage-Matrix zurück.
+
+### `__str__()`
+Gibt eine String-Repräsentation des Objekts zurück.
+
+## 🧪 Tests und Validierung
+
+Das `main.py` Skript demonstriert verschiedene Anwendungsfälle:
+
+1. **Grundlegendes Clustering**: Standard-Ward-Methode mit automatischen Labels
+2. **Benutzerdefinierte Labels**: Verwendung von eigenen Punkt-Beschriftungen
+3. **Methodenvergleich**: Vergleich von Ward, Complete und Average Linkage
+4. **Cluster-Analyse**: Untersuchung mit verschiedenen Cluster-Anzahlen (2, 3, 4)
+
+## ⚠️ Fehlerbehandlung
+
+Die Klasse enthält umfassende Fehlerbehandlung:
+- Validierung der Eingabelängen
+- Prüfung auf gültige Methoden und Metriken
+- Exception-Handling bei Berechnungsfehlern
+- Warnungen bei potenziell problematischen Metrik-Kombinationen
+
+## 🔍 Anwendungsfälle
+
+Diese Implementierung eignet sich für:
+- Datenexploration und -visualisierung
+- Cluster-Analyse von 2D-Daten
+- Vergleich verschiedener Clustering-Methoden
+- Lehre und Forschung im Bereich maschinelles Lernen
+- Vorverarbeitung für andere Analyse-Methoden
+
+## 📚 Weiterführende Informationen
+
+### Theoretischer Hintergrund
+- **Hierarchisches Clustering**: Agglomerative Methode (bottom-up)
+- **Dendrogramm**: Baumdiagramm zur Visualisierung der Cluster-Hierarchie
+- **Linkage-Matrix**: Enthält Informationen über Cluster-Zusammenführungen
+
+### Nützliche Ressourcen
+- SciPy Dokumentation: `scipy.cluster.hierarchy`
+- Matplotlib Dokumentation für Diagrammanpassung
+- Grundlagen des maschinellen Lernens: Clustering-Algorithmen
+
+## 🤝 Beitrag
+
+Beiträge sind willkommen! Bitte:
+1. Forken Sie das Repository
+2. Erstellen Sie einen Feature-Branch
+3. Committen Sie Ihre Änderungen
+4. Pushen Sie zum Branch
+5. Erstellen Sie einen Pull Request
+
+## 📄 Lizenz
+
+Dieses Projekt steht unter der MIT-Lizenz. Siehe LICENSE Datei für Details.
+
+## ✍️ Autor
+
+HierarchicalClustering Klasse für Python
+
+---
+
+*Letztes Update: November 2023*
