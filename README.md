@@ -46,7 +46,7 @@ Diese Sammlung enthält verschiedene Data Science Projekte und Algorithmen, die 
 
 ## 📁 Projektstruktur
 
-
+```
 data-science-examples/
 │
 ├── data_cleaning/
@@ -71,7 +71,7 @@ data-science-examples/
 │   └── weather_analysis/
 │
 └── README.md
-
+```
 
 ## 🚀 Schnellstart
 
