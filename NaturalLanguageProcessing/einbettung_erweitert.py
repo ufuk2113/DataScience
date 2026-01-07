@@ -172,7 +172,56 @@ def main():
         for i, (satz, aehnlichkeit) in enumerate(top_saetze, 1):
             print(f"{i}. [{aehnlichkeit:.3f}] {satz}")
     
-    # 6. PERFORMANCE-METRIKEN
+# 6. AUTOMATISCHER EXPORT DER EMBEDDINGS (immer aktiv)
+    print("\n\n💾 AUTOMATISCHER EMBEDDING EXPORT")
+    print("=" * 60)
+    
+    try:
+        # Standard-Export (immer durchführen)
+        base_name = "embeddings_" + time.strftime("%Y%m%d_%H%M%S")
+        
+        print("Automatischer Export gestartet...")
+        
+        # Export in allen Formaten
+        for fmt in ['txt', 'json']:
+            wort_embedder.exportiere_embeddings(
+                datei_pfad=f"{base_name}_{fmt}",
+                format=fmt
+            )
+            print(f"✅ Embeddings exportiert als: {base_name}_{fmt}.{fmt}")
+        
+        # Optional: CSV Export
+        csv_antwort = input("\nAuch als CSV exportieren? (j/n): ").lower()
+        if csv_antwort == 'j':
+            wort_embedder.exportiere_embeddings(
+                datei_pfad=f"{base_name}_csv",
+                format="csv"
+            )
+            print(f"✅ Embeddings exportiert als: {base_name}_csv.csv")
+        
+        print(f"\n📁 Alle Dateien im aktuellen Verzeichnis gespeichert.")
+        
+    except Exception as e:
+        print(f"❌ Export fehlgeschlagen: {str(e)}")
+        print("⚠️  Fortsetzung ohne Export...")
+        
+    # 7. EXPORT-ÜBERSICHT
+    print("\n\n📋 EXPORT-ÜBERSICHT")
+    print("=" * 60)
+    print("Die trainierten Embeddings wurden gespeichert als:")
+    print("  • embeddings_<timestamp>_txt.txt   - Word2Vec Format (gensim kompatibel)")
+    print("  • embeddings_<timestamp>_json.json - JSON mit Metadaten")
+    print("\nVerwendung in anderen Programmen:")
+    print("  Python:   from gensim.models import KeyedVectors")
+    print("            model = KeyedVectors.load_word2vec_format('embeddings_..._txt.txt')")
+    print("  Pandas:   import pandas as pd")
+    print("            df = pd.read_csv('embeddings_..._csv.csv')")
+    
+    print("\n" + "=" * 80)
+    print("PROGRAMM ERFOLGREICH ABGESCHLOSSEN")
+    print("=" * 80)
+    
+    # 8. PERFORMANCE-METRIKEN
     print("\n\n⏱️  PERFORMANCE-METRIKEN")
     print("=" * 60)
     
@@ -184,7 +233,7 @@ def main():
     print(f"Embedding-Dimension: {wort_embedder.embedding_dimension}")
     print(f"Transformer Parameter: {sum(p.numel() for p in kontext_transformer.parameters()):,}")
     
-    # 7. SPEZIELLE FEHLERBEHANDLUNG UND TESTS
+    # 9. SPEZIELLE FEHLERBEHANDLUNG UND TESTS
     print("\n\n🧪 SPEZIELLE TESTS UND FEHLERHANDLUNG")
     print("=" * 60)
     

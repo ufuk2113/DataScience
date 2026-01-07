@@ -152,8 +152,10 @@ class Word2VecEmbedding:
             text = text.lower()
             
             # Erweiterte Unicode-Unterstützung für Deutsch
-            # Behält deutsche Umlaute und ß bei
-            text = re.sub(r'[^\wäöüß\s]', ' ', text)  # Entfernt Interpunktion
+            # Behält deutsche Umlaute und ß bei, aber normalisiere sie
+            text = re.sub(r'[^\wäöüß\s\-]', ' ', text)  # # Bindestriche behalten Entfernt Interpunktion
+             # Spezielle Fälle behandeln
+            text = text.replace('ß', 'ss')  # ß zu ss für bessere Matching
             text = re.sub(r'\s+', ' ', text)  # Normalisiert Leerzeichen
             text = text.strip()
             
@@ -163,13 +165,31 @@ class Word2VecEmbedding:
             # Tokenisierung
             tokens = text.split()
             
-            # Stopwort-Filterung
+            """             # Stopwort-Filterung
             if self._use_stopwords:
                 tokens = [token for token in tokens 
                          if token not in self._deutsche_stopwoerter]
             
-            return tokens
+            return tokens 
+            """
+             # Einfache Lemmatisierung für deutsche Adjektivendungen
+            bereinigte_tokens = []
+            for token in tokens:
+                # Entferne häufige Adjektivendungen
+                if token.endswith('es'):
+                    token = token[:-2]
+                elif token.endswith('e'):
+                    token = token[:-1]
+                elif token.endswith('en'):
+                    token = token[:-2]
+                elif token.endswith('er'):
+                    token = token[:-2]
+                
+                if token and len(token) > 1:  # Einzelbuchstaben ignorieren
+                    bereinigte_tokens.append(token)
             
+            return bereinigte_tokens
+    
         except Exception as e:
             print(f"⚠️  Fehler bei Tokenisierung: {str(e)}")
             return []
@@ -416,25 +436,39 @@ class Word2VecEmbedding:
     
     def erhalte_index_von_wort(self, wort: str) -> Tensor:
         """
-        Gibt den Index eines Wortes zurück.
-        
-        Args:
-            wort: Eingabewort
-            
-        Returns:
-            Tensor: Tensor mit dem Wortindex oder Nulltensor falls Wort nicht existiert
-            
-        Beispiel:
-            >>> embedder.erhalte_index_von_wort("Fuchs")
-            tensor([5])
+        Verbesserte Methode zum Finden von Wortindizes.
         """
         wort_lower = wort.lower().strip()
         
+        # 1. Direkter Treffer
         if wort_lower in self._wort_zu_index:
             return torch.tensor([self._wort_zu_index[wort_lower]], dtype=torch.long)
-        else:
-            # Fallback: Nulltensor
-            return torch.zeros(1, dtype=torch.long)
+        
+        # 2. Versuche mit einfacher Lemmatisierung
+        grundformen = [
+            wort_lower,
+            wort_lower.rstrip('es'),
+            wort_lower.rstrip('e'),
+            wort_lower.rstrip('en'),
+            wort_lower.rstrip('er'),
+            wort_lower.rstrip('n'),
+            wort_lower.rstrip('s')
+        ]
+        
+        for form in grundformen:
+            if form in self._wort_zu_index:
+                print(f"  🔍 '{wort}' gefunden als '{form}'")
+                return torch.tensor([self._wort_zu_index[form]], dtype=torch.long)
+        
+        # 3. Fallback: Suche nach Teilwörtern
+        for vocab_wort, idx in self._wort_zu_index.items():
+            if vocab_wort in wort_lower or wort_lower in vocab_wort:
+                print(f"  🔍 Teilwort-Ersatz für '{wort}': '{vocab_wort}'")
+                return torch.tensor([idx], dtype=torch.long)
+        
+        # 4. Endgültiger Fallback
+        print(f"  ⚠️  Wort '{wort}' nicht im Vokabular gefunden")
+        return torch.zeros(1, dtype=torch.long)
     
     def erhalte_embedding_matrix(self) -> np.ndarray:
         """
