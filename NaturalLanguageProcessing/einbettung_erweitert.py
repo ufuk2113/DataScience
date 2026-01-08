@@ -217,9 +217,11 @@ def main():
     print("  Pandas:   import pandas as pd")
     print("            df = pd.read_csv('embeddings_..._csv.csv')")
     
+    """
     print("\n" + "=" * 80)
     print("PROGRAMM ERFOLGREICH ABGESCHLOSSEN")
-    print("=" * 80)
+    print("=" * 80) 
+    """
     
     # 8. PERFORMANCE-METRIKEN
     print("\n\n⏱️  PERFORMANCE-METRIKEN")
